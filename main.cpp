@@ -8,7 +8,8 @@ class Player {
 		float fov = 3.14159265 / 4.0;
 
 		int health = 100;
-		int ammo = 100;
+
+		bool openDoor = false;
 } mPlayer;
 
 class Map {
@@ -41,6 +42,17 @@ class SDLThings {
 
 } nvideo;
 
+
+class Weapon {
+	public:	
+		bool havePistol = true;
+		int ammo = 100;
+		SDL_Texture *wpText;
+		SDL_Rect wpRect;
+		SDL_Rect wpfRect;
+		SDL_Texture *wpFloorText;
+} mWeapon;
+
 int main(int argc, char* argv[]) {
 	unsigned int currTime, lastTime = 0;
 	
@@ -51,7 +63,7 @@ int main(int argc, char* argv[]) {
 	nMap.dMap += "WWWWWWWWWWWWWWWW";
 	nMap.dMap += "W..W.W.........W";
 	nMap.dMap += "W..W.W.........W";
-	nMap.dMap += "W..W.W.........W";
+	nMap.dMap += "W..W.WDDDDDDDDDW";
 	nMap.dMap += "W....W.........W";
 	nMap.dMap += "W.WW.W.........W";
 	nMap.dMap += "W.W..W.........W";
@@ -80,6 +92,12 @@ int main(int argc, char* argv[]) {
 				float fDistanceToWall = 0.0f;
 				bool bHitWall = false;
 
+				bool bHitSprite = false;
+				int mSpriteLocX = 0;
+				int mSpriteLocY = 0;
+
+				float fDistanceToSprite = 0.0f;
+
 				float fEyeX = sinf(fRayAngle);	
 				float fEyeY = cosf(fRayAngle);
 				while (!bHitWall && fDistanceToWall < 16.0f) {
@@ -92,11 +110,19 @@ int main(int argc, char* argv[]) {
 						bHitWall = true;
 						fDistanceToWall = 16.0f;
 					} else {
-						if (nMap.dMap[nTestX * nMap.width + nTestY] == 'W') {
+						if (nMap.dMap[nTestX * nMap.width + nTestY] == 'W' || nMap.dMap[nTestX * nMap.width + nTestY] == 'D') {
 							bHitWall = true;
+							
+
+							/*//door opening
+							if (nMap.dMap[nTestX * nMap.width + nTestY] == 'D' && fDistanceToWall < 1.0f && mPlayer.openDoor) {
+								nMap.dMap[nTestX * nMap.width + nTestY] = '.';
+							} //*/
 						}	
 					}
+
 				}
+
 
 				int nCeiling = (mScreen.h/2)-mScreen.h/fDistanceToWall;	
 				int nFloor = mScreen.h - nCeiling;
@@ -113,11 +139,39 @@ int main(int argc, char* argv[]) {
 				SDL_SetRenderDrawColor(nvideo.renderer,205,133,63,255); //floor
 				SDL_RenderDrawLine(nvideo.renderer,x,nFloor,x,mScreen.h);				
 
+				//render sprite if we have any
+				//TODO: not working
+				/*if (bHitSprite) { 
+					mWeapon.wpfRect.w = 128/fDistanceToSprite;	
+					mWeapon.wpfRect.h = mWeapon.wpfRect.w/2;
+					if (x > mSpriteLocX && x < mSpriteLocX+mWeapon.wpfRect.w) {
+						mWeapon.wpfRect.x = x; mWeapon.wpfRect.y = 256;
+						SDL_SetRenderDrawColor(nvideo.renderer,0,0,0,255); //floor
+						SDL_RenderFillRect(nvideo.renderer,&mWeapon.wpfRect);
+					}
+				} // */
+
 
 
 		} // end of 3d rendering things*/
 
 		/* begin of 2d things, like gui */
+
+		/* weapon firs, cuz layers */
+
+		//draw weapon IN HAND
+		if (mWeapon.havePistol == true) {
+			mWeapon.wpRect.w = mScreen.w/4;
+			mWeapon.wpRect.h = mScreen.h/4;
+			mWeapon.wpRect.x = mScreen.w/2-mWeapon.wpRect.w/2;
+			mWeapon.wpRect.y = (mScreen.h/16)*11;
+			mWeapon.wpText = SDL_CreateTextureFromSurface(nvideo.renderer,SDL_LoadBMP("gfx/pistol.bmp"));
+		}
+
+		//SDL_RenderDrawRect(nvideo.renderer,&mWeapon.wpRect);
+		SDL_RenderCopy(nvideo.renderer,mWeapon.wpText,NULL,&mWeapon.wpRect);
+
+		/* now the gui */
 		nvideo.gui_bg.w = mScreen.w;
 		nvideo.gui_bg.h = mScreen.h/8;
 		nvideo.gui_bg.x = 0;
@@ -164,6 +218,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		//EOF MAP
+
 		/* end of 2d things */
 
 		
@@ -195,7 +250,11 @@ int main(int argc, char* argv[]) {
 					mPlayer.Y += cosf(mPlayer.angle) * 0.2f;
 				}
 				break;
+			    case SDLK_SPACE:
+				mPlayer.openDoor = true;
+				break;
 		            default:
+				mPlayer.openDoor = false;
 		                break;
 		        }
 		    }
