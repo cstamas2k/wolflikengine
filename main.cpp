@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
 
 		/* begin of 2d things, like gui */
 
-		/* weapon firs, cuz layers */
+		/* weapon first, cuz layers */
 
 		//draw weapon IN HAND
 		if (mWeapon.havePistol == true) {
