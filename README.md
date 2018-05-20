@@ -6,17 +6,29 @@ no textures (yet), no gui, just the pure wall&sky&ceiling renderer and user cont
 
 # usage
 game controls: 
+
               delete: strafe left
+
               pgdown: strafe right
+
               arrow keys: move
+
 map editor controls:
+
                     arrow keys: move selection
+
                     q: delete block
+
                     d: door block
+
                     e: door entry block (from where you can open the door)
+
                     w: wall block
+
                     1: open "map1.dat" file
+
                     2: save to "map1.dat" file
+
 
 # the game is undergoing redesign at the moment.
 
