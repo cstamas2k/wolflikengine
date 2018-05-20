@@ -18,12 +18,26 @@ int main(int argc, char* argv[]) {
 		/* input handling*/
 
 		if (sdl.event.type == SDL_KEYDOWN) {
-			if (sdl.event.key.keysym.sym == SDLK_UP)	player.moveFwd(); //forward
-			if (sdl.event.key.keysym.sym == SDLK_DOWN)	player.moveRwd(); //reverse
-			if (sdl.event.key.keysym.sym == SDLK_PAGEDOWN)	player.moveRight(); //strafe right
-			if (sdl.event.key.keysym.sym == SDLK_DELETE)	player.moveLeft(); //strafe left
+			if (sdl.event.key.keysym.sym == SDLK_UP) { 
+				player.moveFwd(); 
+				if (player.isPlayerColliding(map_data)) player.moveRwd();
+			}
+			if (sdl.event.key.keysym.sym == SDLK_DOWN) {
+				player.moveRwd();
+				if (player.isPlayerColliding(map_data)) player.moveFwd();
+			}
+			if (sdl.event.key.keysym.sym == SDLK_PAGEDOWN) {
+				player.moveRight();
+				if (player.isPlayerColliding(map_data)) player.moveLeft();
+			}
+			if (sdl.event.key.keysym.sym == SDLK_DELETE) {
+				player.moveLeft();
+				if (player.isPlayerColliding(map_data)) player.moveRight();
+			}
 			if (sdl.event.key.keysym.sym == SDLK_LEFT)	player.angle -= 0.1;
-			if (sdl.event.key.keysym.sym == SDLK_RIGHT) player.angle += 0.1;
+			if (sdl.event.key.keysym.sym == SDLK_RIGHT) player.angle += 0.1; 
+			if (sdl.event.key.keysym.sym == SDLK_SPACE) player.openCurrDoor();
+
 		}
 		SDL_RenderPresent(sdl.r);
 	}
